@@ -16,24 +16,20 @@
 class Solution {
     public long kthLargestLevelSum(TreeNode root, int k) {
 
-        PriorityQueue<Long> maxHeap = new PriorityQueue<>( (x, y) -> Long.compare(y, x));
+        PriorityQueue<Long> minHeap = new PriorityQueue<>( (x, y) -> Long.compare(x,y));
 
-        inorderTraversal(root, maxHeap);
+        inorderTraversal(root, minHeap, k);
 
-        int counter = 0;
-        while (!maxHeap.isEmpty() && counter < k) {
-            long sum = maxHeap.poll();
-            counter++;
-            if (counter == k) {
-                return sum;
-            }
+
+        if (k == minHeap.size()) {
+            return minHeap.poll(); // top most one is kth largest
         }
 
         return -1l;
         
     }
 
-    void inorderTraversal(TreeNode root, PriorityQueue<Long> maxHeap) {
+    void inorderTraversal(TreeNode root, PriorityQueue<Long> minHeap, int k) {
 
            Queue<TreeNode> queue = new LinkedList<>();
            queue.add(root);
@@ -55,8 +51,28 @@ class Solution {
                     }
                     currentLevelSize--;
                }
+            
+           /*
+k = 3
+                
+                4
+                5
+                6
 
-              maxHeap.add(currentLevelSum);
+
+           */
+
+
+            if (k < minHeap.size() + 1) { // if k elements filled
+                if (minHeap.peek() < currentLevelSum) { // check topmost one is smaller
+                    minHeap.poll(); // remove and get new one
+                    minHeap.add(currentLevelSum);
+                }
+            } else {
+                minHeap.add(currentLevelSum); // keep filling till we attain kth element
+
+            }   
+              
            }
 
     }
