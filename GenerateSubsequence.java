@@ -12,7 +12,7 @@ public class GenerateSubsequence {
             return;
         }
 
-        char c = s.charAt(0);
+        char c = s.charAt(startIndex);
 
         // include
         intermediateResult.offerLast("" + c);
