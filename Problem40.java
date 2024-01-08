@@ -1,46 +1,42 @@
 class Solution {
     public List<List<Integer>> combinationSum2(int[] candidates, int target) {
          
-         Arrays.sort(candidates);
-         List<List<Integer>> results = new LinkedList<>();
-         int prev = -1;
-                for (int i = 0; i < candidates.length; i++) {
-                    if (prev == candidates[i]) {
-                        continue;
-                    }
-                    prev = candidates[i];
-                      // try forming combination with each element as starting node
-                    Deque<Integer> intermediateReult = new LinkedList<>();
-                    intermediateReult.offerLast(candidates[i]); // consider the current element
-                    getCombination(candidates, target - candidates[i], i + 1, intermediateReult, results);
-                }
-                return results;
+       Arrays.sort(candidates);
+       List<List<Integer>> result = new LinkedList<>();
+      // for (int i = 0; i < candidates.length; i++) {
+       Set<Integer> startIngSequence = new HashSet<>();   
+            generateCombinations(candidates, 0, 0, new ArrayList<>(), target , result);
+       //}    
+       return result;
     }
 
 
-     // startIndex - since we need to move froward , we need to give startIndex
-    void getCombination(int[] candidates, int target, int startIndex, Deque<Integer> intermediateReult, List<List<Integer>> results)  {
+    void generateCombinations(int[] candidates, int index, int sumSoFar, List<Integer> intermediateResult, int target, List<List<Integer>> result) {
+            
+         // [1,2,2,2,5] TARGET 5
 
-        if (target < 0) { // no point moving adding more calculation since numbers are positive
-            return;
-        }
-       
-       if (target == 0) { // we got the number
-                 if (!results.contains(intermediateReult)) {
-                        results.add(new LinkedList<>(intermediateReult)); // add to original list
-                 }
-                 return;
-        }
+            if (sumSoFar == target) {
+                List<Integer> rs = new LinkedList<>(intermediateResult);
+                if (!result.contains((rs))) {
+                  result.add(rs);
 
-        // always move forward , hence start from existing index
-        for (int i = startIndex; i < candidates.length; i++) {
-            if (target - candidates[i] >= 0) { // if sum is less than or equal to sum , then only consider 
-                intermediateReult.offerLast(candidates[i]);
-                // fixing the current number and trying looking for combination further
-                getCombination(candidates, target - candidates[i], i + 1, intermediateReult, results);
-                intermediateReult.pollLast(); // exclude current element
+                }
+                return;
             }
-        }
+
+            for (int i = index; i < candidates.length; i++) {
+                if (sumSoFar +  candidates[i] > target) {
+                    return;// since array is already sorted
+                }
+                if (i > index && candidates[i-1] == candidates[i]) { // for the cases where 2,2,2,3
+                            continue; // with prev index as 2 , its evaluated , so no point of evaluating further
+                } 
+
+    
+                intermediateResult.add(candidates[i]);
+                generateCombinations(candidates, i + 1, sumSoFar + candidates[i], intermediateResult, target, result);
+                intermediateResult.removeLast();
+            }
 
     }
 }
